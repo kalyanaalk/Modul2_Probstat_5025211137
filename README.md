@@ -65,7 +65,9 @@ Didapatkan p-value lebih kecil dari significant level (0.05) sehingga hipotesis 
 ![image](https://user-images.githubusercontent.com/107338432/207083000-9b3370d6-a9ad-4d5d-a78e-3d7fc79a9c40.png)
 
 Step 1 : Menentukan H0 dan H1
+
 H0: mean <= 20000
+
 H1: mean > 20000
 
 Step 2 : Menentukan variabel
