@@ -318,3 +318,84 @@ ggplot(kucingITS, aes(x = Group, y = Length)) + geom_boxplot(fill = "grey80", co
 Library ggplot2 digunakan untuk memvisualisasi data. Dari fungsi tersebut, didapatkan grafik sebagai berikut.
 
 ![image](https://user-images.githubusercontent.com/107338432/207145198-da77cdc9-717e-40a1-b1ac-6eb4c03c8180.png)
+
+## Soal 5
+
+>Data yang digunakan merupakan hasil eksperimen yang dilakukan untuk mengetahui pengaruh suhu operasi (100˚C, 125˚C dan 150˚C) dan tiga jenis kaca pelat muka (A, B dan C) pada keluaran cahaya tabung osiloskop. Percobaan dilakukan sebanyak 27 kali dan didapat data sebagai berikut: Data Hasil Eksperimen. Dengan data tersebut :
+
+<img width="538" alt="image" src="https://user-images.githubusercontent.com/107338432/207157845-784214c2-c7f9-43e0-959f-dad1a5f42d24.png">
+
+![image](https://user-images.githubusercontent.com/107338432/207158018-c59e1094-84a5-435b-a3e0-52bc90f8b082.png)
+
+### 5-A
+
+>Buatlah plot sederhana untuk visualisasi data 
+
+```R
+qplot(x = Temp, y = Light, geom = "point", data = GLASSTEMPLIGHT) + facet_grid(.~Glass, labeller = label_both)
+```
+
+Library ggplot2 digunakan untuk memvisualisasi data. Dari fungsi tersebut, didapatkan grafik sebagai berikut.
+
+![image](https://user-images.githubusercontent.com/107338432/207158485-a36aa061-9973-435a-9187-be296c4f2ac8.png)
+
+### 5-B
+
+>Lakukan uji ANOVA dua arah untuk 2 faktor
+
+```R
+GLASSTEMPLIGHT$Glass <- as.factor(GLASSTEMPLIGHT$Glass)
+GLASSTEMPLIGHT$Temp_Factor <- as.factor(GLASSTEMPLIGHT$Temp)
+str(GLASSTEMPLIGHT)
+
+anova <- aov(Light ~ Glass*Temp_Factor, data = GLASSTEMPLIGHT)
+summary(anova)
+```
+
+Dibuat variabel independen, yaitu factor. Kemudian, anova dilakukan menggunakan fungsi aov(). Didapatkan hasil sebagai berikut.
+
+<img width="508" alt="image" src="https://user-images.githubusercontent.com/107338432/207159157-f6615ba4-dc60-4f8b-baaa-2fa24af51b6b.png">
+
+### 5-C
+
+>Tampilkan tabel dengan mean dan standar deviasi keluaran cahaya untuk setiap perlakuan (kombinasi kaca pelat muka dan suhu operasi)
+
+```R
+data_summary <- group_by(GLASSTEMPLIGHT, Glass, Temp) %>%
+  summarise(mean=mean(Light), sd=sd(Light)) %>%
+  arrange(desc(mean))
+print(data_summary)
+```
+
+Cara diatur dalam urutan menurun untuk menambahkan huruf superskrip dari tes Tukey. Didapatkan hasil sebagai berikut.
+
+<img width="188" alt="image" src="https://user-images.githubusercontent.com/107338432/207159586-0b6f87ef-d126-4199-af64-48aaa64eb9e1.png">
+
+### 5-D
+
+>Lakukan uji Tukey
+
+```R
+tukey <- TukeyHSD(anova)
+print(tukey)
+```
+
+Perbandingan rata-rata menggunakan uji Tukey dapat dilakukan pada objek yang dihasilkan anova. Uji Tukey dilakukan menggunakan fungsi TukeyHSD(), dan mendapatkan hasil berikut.
+
+<img width="465" alt="image" src="https://user-images.githubusercontent.com/107338432/207160327-09345047-21a2-42ae-80b6-5aed1594a24c.png">
+
+<img width="398" alt="image" src="https://user-images.githubusercontent.com/107338432/207160433-d77ebd16-b179-4dbe-a2f0-ca727a7c1071.png">
+
+### 5-E
+
+>Gunakan compact letter display untuk menunjukkan perbedaan signifikan antara uji Anova dan uji Tukey
+
+```R
+tukey.cld <- multcompLetters4(anova, tukey)
+print(tukey.cld)
+```
+
+Penggunaan huruf dilakukan untuk menunjukan perbedaan dalam perbandingan berpasangan dan dapat menyederhanakan visualisasi serta pembahasan yang signifikan antar sarana. Hal ini dilakukan menggunakan fungsi multcompLetters4(), dan menunjukkan hasil sebagai berikut.
+
+<img width="350" alt="image" src="https://user-images.githubusercontent.com/107338432/207161350-fb20a411-7660-47bd-836f-40c2cdf5b5a8.png">
+
