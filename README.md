@@ -214,3 +214,107 @@ Karena p-value (0.06049) lebih besar dari alfa, maka H0 diterima.
 >Kesimpulan
 
 Tidak ada bukti yang cukup bahwa rata-rata saham Bandung tidak sama dengan rata-rata saham Bali. Klaim bahwa rata-rata saham Bandung sama dengan rata-rata saham Bali diterima.
+
+## Soal 4
+
+>Seorang Peneliti sedang meneliti spesies dari kucing di ITS . Dalam penelitiannya ia mengumpulkan data  tiga spesies kucing yaitu kucing oren, kucing hitam dan kucing putih dengan panjangnya masing-masing. 
+Jika : 
+
+Diketahui dataset  https://intip.in/datasetprobstat1 
+
+H0 : Tidak ada perbedaan panjang antara ketiga spesies atau rata-rata panjangnya sama
+
+
+![image](https://user-images.githubusercontent.com/107338432/207139532-247b50a4-4037-4fcd-8dc6-bb144c863ac5.png)
+
+### 4-A
+
+>Buatlah masing masing jenis spesies menjadi  3 subjek "Grup" (grup 1,grup 2,grup 3). Lalu Gambarkan plot kuantil normal untuk setiap kelompok dan lihat apakah ada outlier utama dalam homogenitas varians.
+
+```R
+kucingITS$Group <- as.factor(kucingITS$Group)
+kucingITS$Group = factor(kucingITS$Group,labels = c("Kucing oren", "Kucing hitam", "Kucing putih"))
+
+class(kucingITS$Group)
+
+Group1 <- subset(kucingITS, Group == "Kucing oren")
+Group2 <- subset(kucingITS, Group == "Kucing hitam")
+Group3 <- subset(kucingITS, Group == "Kucing putih")
+
+qqnorm(Group1$Length)
+qqline(Group1$Length)
+
+qqnorm(Group2$Length)
+qqline(Group2$Length)
+
+qqnorm(Group3$Length)
+qqline(Group3$Length)
+```
+
+Plot kuantil setiap kelompok digambar menggunakan variabel independen, yaitu factor.qqnorm() dan qqline(). Berikut adalah gambar plot kuantil semua kelompok.
+
+#### Kelompok Kucing Oren
+
+![image](https://user-images.githubusercontent.com/107338432/207140603-4189b3f1-9d35-4cfc-b2a1-c9e28bc0e58d.png)
+
+#### Kelompok Kucing Hitam
+
+![image](https://user-images.githubusercontent.com/107338432/207140835-f16eda32-449d-4453-84a4-ae60c7c5de0d.png)
+
+#### Kelompok Kucing Putih
+
+![image](https://user-images.githubusercontent.com/107338432/207140992-f527c2e1-d792-4f9a-b1d1-41b419a18738.png)
+
+### 4-B
+
+>Carilah atau periksalah Homogeneity of variances nya ,berapa nilai p yang didapatkan? Apa hipotesis dan kesimpulan yang dapat diambil?
+
+```R
+bartlett.test(Length ~ Group, data = kucingITS)
+```
+
+Homogeinity of Variances diperiksa dengan fungsi bartlett.test(). Dari pemeriksaan tersebut, didapatkan p-value sama dengan 0.08054, Bartlett's K-Squared sama dengan 0.43292, dan derajat kebebasan atau df sama dengan 2.
+
+<img width="380" alt="image" src="https://user-images.githubusercontent.com/107338432/207142183-440fbd3e-9414-4fde-9bc7-a8a7868910bd.png">
+
+### 4-C
+
+>Untuk uji ANOVA, buatlah model linier dengan Panjang versus Grup dan beri nama model tersebut model 1.
+
+```R
+model1 = lm(Length ~ Group, data = kucingITS)
+anova(model1)
+```
+
+<img width="400" alt="image" src="https://user-images.githubusercontent.com/107338432/207143420-242afc31-31ed-4b91-b306-e5b18b322086.png">
+
+### 4-D
+
+>Dari hasil poin C, berapakah nilai-p? Apa yang dapat Anda simpulkan dari H0?
+
+Didapatkan nilai p-value 0.0013. Nilai ini lebih kecil dari tingkat signifikansi, yaitu 0.5, sehingga H0 ditolak. 
+
+### 4-E
+
+>Verifikasilah jawaban model 1 dengan Post-hooc test TukeyHSD, dari nilai p yang didapatkan apakah satu jenis kucing lebih panjang dari yang lain? Jelaskan.
+
+```R
+TukeyHSD(aov(model1))
+```
+
+Untuk Post-hoc test Tukey HSD, digunakan fungsi aov() dan TukeyHSD(). Hasil yang didapat adalah sebagai berikut.
+
+<img width="439" alt="image" src="https://user-images.githubusercontent.com/107338432/207144703-7b7e8196-7c0b-4351-8eb4-d2e927c210e9.png">
+
+### 4-F
+
+>Visualisasikan data dengan ggplot2
+
+```R
+library("ggplot2")
+ggplot(kucingITS, aes(x = Group, y = Length)) + geom_boxplot(fill = "grey80", colour = "black") + scale_x_discrete() + xlab("Treatment Group") + ylab("Length (cm)")
+```
+
+Library ggplot2 digunakan untuk memvisualisasi data. Dari fungsi tersebut, didapatkan grafik sebagai berikut.
+
+![image](https://user-images.githubusercontent.com/107338432/207145198-da77cdc9-717e-40a1-b1ac-6eb4c03c8180.png)
